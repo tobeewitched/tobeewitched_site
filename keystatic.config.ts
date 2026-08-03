@@ -2,7 +2,8 @@ import { config, fields, collection, singleton } from '@keystatic/core';
 
 export default config({
   storage: {
-    kind: 'local',
+    kind: 'github',
+    repo: 'tobeewitched/tobeewitched_site'
   },
   collections: {
     essays: collection({
@@ -147,8 +148,6 @@ export default config({
         pubsDesc: fields.text({ label: 'Текст для "Публикаций"', multiline: true, defaultValue: 'Полный список научных статей, распределенный по статусу.' }),
       },
     }),
-    
-    // НОВЫЙ БЛОК: ТЕСТ
     test: singleton({
       label: 'Настройки Теста (Результаты)',
       path: 'src/content/test/data',
