@@ -1,0 +1,86 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content'; 
+
+// 1. Собираем все эссе для генерации страниц
+export async function getStaticPaths() {
+  const essays = await getCollection('essays');
+  return essays.map((essay) => ({
+    params: { slug: essay.id },
+    props: { essay },
+  }));
+}
+
+// 2. Получаем данные текущего эссе
+const { essay } = Astro.props;
+const { Content } = await render(essay);
+
+// Красиво форматируем дату на русский язык
+const formattedDate = essay.data.date 
+  ? new Date(essay.data.date).toLocaleDateString('ru-RU', { year: 'numeric', month: 'long', day: 'numeric' })
+  : 'Дата не указана';
+---
+
+<Layout>
+  <main class="py-16 md:py-20 min-h-[600px]">
+    
+    <!-- Заголовок статьи -->
+    <div class="max-w-3xl mx-auto text-center mb-12">
+      <span class="text-[10px] uppercase font-bold text-blue-600 tracking-wider">
+        Эссе &middot; {essay.data.tag || 'Заметка'}
+      </span>
+      <h2 class="text-4xl md:text-5xl font-bold mt-4 mb-6 font-serif leading-tight text-black">
+        {essay.data.title}
+      </h2>
+      <div class="text-sm text-gray-400 flex justify-center items-center gap-3 font-medium">
+        <span>{formattedDate}</span>
+        <span>•</span>
+        <span>{essay.data.readingTime || '5 мин чтения'}</span>
+      </div>
+    </div>
+
+    <!-- 🎧 РАБОЧИЙ ЭМБИЕНТ ПЛЕЕР (Показывается, если в админке есть и название, и ссылка на файл) -->
+    {essay.data.ambientTrack && essay.data.audioFile && (
+      <div class="max-w-2xl mx-auto mb-16 bg-gray-50 border border-gray-200 rounded-full p-2 pl-3 flex items-center gap-4 shadow-sm">
+        
+        <!-- Скрытый системный аудиоплеер -->
+        <audio id="ambient-player" src={essay.data.audioFile} loop preload="none"></audio>
+        
+        <!-- Кнопка Play/Pause -->
+        <button id="play-btn" class="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors">
+          ▶
+        </button>
+        
+        <!-- Название трека -->
+        <div class="flex-1">
+          <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Фоновое сопровождение</div>
+          <div class="text-sm font-medium text-gray-800">{essay.data.ambientTrack}</div>
+        </div>
+      </div>
+      
+      <!-- Скрипт, который заставляет кнопку работать -->
+      <script is:inline>
+        const btn = document.getElementById('play-btn');
+        const player = document.getElementById('ambient-player');
+        
+        if (btn && player) {
+          btn.addEventListener('click', () => {
+            if (player.paused) {
+              player.play();
+              btn.innerText = '⏸'; // Меняем значок на паузу
+            } else {
+              player.pause();
+              btn.innerText = '▶'; // Меняем значок на плей
+            }
+          });
+        }
+      </script>
+    )}
+
+    <!-- Текст статьи -->
+    <article class="prose prose-lg prose-gray mx-auto text-gray-800 leading-relaxed font-serif">
+      <Content />
+    </article>
+
+  </main>
+</Layout>

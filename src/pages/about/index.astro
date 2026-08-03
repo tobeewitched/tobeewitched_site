@@ -1,0 +1,46 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render, getEntry } from 'astro:content';
+
+const aboutSections = await getCollection('about');
+aboutSections.sort((a, b) => (a.data.order || 0) - (b.data.order || 0));
+
+const renderedSections = await Promise.all(
+  aboutSections.map(async (section) => {
+    const { Content } = await render(section);
+    return { ...section, Content };
+  })
+);
+
+const siteData = await getEntry('site', 'settings');
+const desc = siteData?.data?.aboutDesc || 'Мой академический путь, биография и сфера научных интересов.';
+---
+
+<Layout>
+  <main class="pb-16 min-h-[600px] max-w-4xl mx-auto">
+    
+    <div class="mb-12 border-b border-gray-100 pb-8">
+      <h2 class="text-3xl md:text-4xl font-bold font-serif text-black mb-4">Обо мне</h2>
+      <p class="text-gray-600 text-lg">{desc}</p>
+    </div>
+
+    <div class="space-y-4">
+      {renderedSections.length === 0 ? (
+        <p class="text-gray-500 italic">Разделы пока не добавлены.</p>
+      ) : (
+        renderedSections.map(({ data, Content }) => (
+          <details class="group border border-gray-200 bg-white hover:border-gray-300 transition-colors shadow-sm [&>summary::-webkit-details-marker]:hidden">
+            <summary class="font-medium cursor-pointer p-5 flex justify-between items-center bg-gray-50 list-none">
+              <span class="text-gray-900 font-serif text-xl font-bold">{data.title}</span>
+              <span class="group-open:rotate-180 transition-transform text-gray-400 font-mono text-xs">▼</span>
+            </summary>
+            <div class="p-6 border-t border-gray-200 text-gray-700 leading-relaxed bg-white prose prose-lg prose-gray max-w-none font-serif">
+              <Content />
+            </div>
+          </details>
+        ))
+      )}
+    </div>
+
+  </main>
+</Layout>

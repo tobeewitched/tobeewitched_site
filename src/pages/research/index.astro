@@ -1,0 +1,51 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { createReader } from '@keystatic/core/reader';
+import keystaticConfig from '../../../keystatic.config';
+import { getEntry } from 'astro:content';
+
+const reader = createReader(process.cwd(), keystaticConfig);
+const papers = await reader.collections.research.all();
+
+const siteData = await getEntry('site', 'settings');
+const desc = siteData?.data?.researchDesc || 'Мои научные статьи, монографии и полевые заметки.';
+---
+
+<Layout>
+  <main class="pb-16 min-h-[500px]">
+    
+    <div class="mb-12 border-b border-gray-100 pb-8">
+      <h2 class="text-3xl md:text-4xl font-bold font-serif text-black mb-4">Исследования и препринты</h2>
+      <p class="text-gray-600 text-lg max-w-2xl">{desc}</p>
+    </div>
+
+    <div class="space-y-12">
+      {papers.length === 0 ? (
+        <p class="text-gray-500 italic">Пока здесь нет публикаций.</p>
+      ) : (
+        papers.map((paper) => (
+          <article class="group">
+            <div class="flex flex-col md:flex-row md:items-baseline gap-2 md:gap-6 mb-2">
+              <time class="text-sm font-mono text-gray-400 shrink-0 w-32">{paper.entry.date || 'Без даты'}</time>
+              <a href={`/research/${paper.slug}`} class="block">
+                <h3 class="text-2xl font-bold font-serif text-gray-900 group-hover:text-blue-600 transition-colors decoration-2 underline-offset-4 group-hover:underline">
+                  {paper.entry.title}
+                </h3>
+              </a>
+            </div>
+            <div class="flex flex-col md:flex-row gap-2 md:gap-6">
+              <div class="shrink-0 w-32 hidden md:block"></div>
+              <div>
+                <div class="flex items-center gap-3 text-xs font-semibold uppercase tracking-wider mt-2">
+                  <span class="text-purple-600">{paper.entry.tag || 'Препринт'}</span>
+                  <span class="text-gray-300">•</span>
+                  <span class="text-gray-400 text-[10px]">{paper.entry.readingTime || '5 мин'}</span>
+             </div>
+              </div>
+            </div>
+          </article>
+        ))
+      )}
+    </div>
+  </main>
+</Layout>

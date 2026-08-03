@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DurandTest from '../components/DurandTest';
+import { getEntry } from 'astro:content';
+
+// Достаем базу теста из админки (Keystatic)
+const testEntry = await getEntry('test', 'data');
+const cmsData = testEntry?.data || null;
+---
+
+<Layout>
+  <main class="py-16 md:py-20 min-h-[600px] bg-gray-50/30">
+    
+    <!-- Вызов нашего React-компонента и передача в него данных из админки -->
+    <DurandTest client:load cmsData={cmsData} />
+
+  </main>
+</Layout>

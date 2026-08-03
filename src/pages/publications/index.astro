@@ -1,0 +1,71 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, getEntry } from 'astro:content';
+
+const allPubs = await getCollection('publications');
+allPubs.sort((a, b) => parseInt(b.data.year) - parseInt(a.data.year));
+
+const published = allPubs.filter(p => p.data.status === 'published');
+const upcoming = allPubs.filter(p => p.data.status === 'upcoming');
+
+const siteData = await getEntry('site', 'settings');
+const desc = siteData?.data?.pubsDesc || 'Полный список научных статей, распределенный по статусу выхода.';
+---
+
+<Layout>
+  <main class="pb-16 min-h-[600px] max-w-4xl mx-auto">
+    
+    <div class="mb-16 border-b border-gray-100 pb-8">
+      <h2 class="text-3xl md:text-4xl font-bold font-serif text-black mb-4">Академические публикации</h2>
+      <p class="text-gray-600 text-lg max-w-2xl">{desc}</p>
+    </div>
+
+    <!-- ВЫШЕДШИЕ -->
+    <section class="mb-20">
+      <h3 class="text-sm font-bold uppercase tracking-widest text-black border-b-2 border-black pb-3 mb-8 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-black"></span>
+        Опубликованные работы
+      </h3>
+      <ul class="space-y-8">
+        {published.length === 0 ? <p class="text-sm text-gray-500 italic">Нет добавленных публикаций.</p> : published.map((pub) => (
+          <li class="flex flex-col sm:flex-row gap-4 sm:gap-6 group">
+            <div class="sm:w-20 pt-1 shrink-0">
+              <span class="bg-gray-100 text-gray-600 text-sm font-mono px-2 py-1 rounded-sm">{pub.data.year}</span>
+            </div>
+            <div>
+              <h4 class="text-xl font-bold text-gray-900 font-serif leading-snug">{pub.data.title}</h4>
+              <p class="text-sm text-gray-600 mt-2 leading-relaxed">{pub.data.journal}</p>
+              {pub.data.linkUrl && (
+                <a href={pub.data.linkUrl} target="_blank" class="inline-flex items-center gap-1 mt-3 text-xs font-semibold uppercase text-blue-600 hover:text-blue-800">
+                  {pub.data.linkText} <span class="text-lg leading-none">↗</span>
+                </a>
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- ПРЕДСТОЯЩИЕ -->
+    <section>
+      <h3 class="text-sm font-bold uppercase tracking-widest text-gray-500 border-b border-gray-200 pb-3 mb-8 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-gray-300 animate-pulse"></span>
+        Предстоящие (В рецензировании / В печати)
+      </h3>
+      <ul class="space-y-8 opacity-80">
+        {upcoming.length === 0 ? <p class="text-sm text-gray-500 italic">Нет предстоящих публикаций.</p> : upcoming.map((pub) => (
+          <li class="flex flex-col sm:flex-row gap-4 sm:gap-6">
+            <div class="sm:w-20 pt-1 shrink-0">
+              <span class="border border-gray-300 text-gray-500 text-sm font-mono px-2 py-1 rounded-sm border-dashed">{pub.data.year}</span>
+            </div>
+            <div>
+              <h4 class="text-xl font-bold text-gray-600 font-serif leading-snug">{pub.data.title}</h4>
+              <p class="text-sm text-gray-500 mt-2 italic">{pub.data.journal}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+  </main>
+</Layout>

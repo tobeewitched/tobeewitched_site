@@ -1,0 +1,6 @@
+---
+import { makePage } from '@keystatic/astro/ui';
+export const prerender = false;
+export const all = makePage(Astro);
+---
+<all.Component />
