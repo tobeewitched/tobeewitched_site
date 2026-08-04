@@ -1,17 +1,27 @@
 ---
-const { image, caption, size = 'full' } = Astro.props;
+const { image, caption, size = 'full', align = 'center' } = Astro.props;
 
+// Настройка размеров
 const sizeClasses = {
   full: 'w-full',
-  medium: 'w-full md:w-3/4 mx-auto',
-  small: 'w-full md:w-1/2 mx-auto',
+  medium: 'w-3/4',
+  small: 'w-1/2 md:w-1/3',
 };
+
+// Настройка обтекания (если картинка слева, текст пойдет справа, и наоборот)
+const alignClasses = {
+  center: 'mx-auto clear-both block',
+  left: 'float-left mr-6 mb-4',
+  right: 'float-right ml-6 mb-4',
+};
+
+const finalClass = `${sizeClasses[size]} ${alignClasses[align]} my-6`;
 ---
 
-<figure class={`my-10 ${sizeClasses[size] || 'w-full'}`}>
-  <img src={image} alt={caption || ''} class="w-full h-auto rounded-sm shadow-sm" />
+<figure class={finalClass}>
+  <img src={image} alt={caption || 'Изображение'} class="w-full h-auto rounded-sm shadow-sm m-0" />
   {caption && (
-    <figcaption class="text-center text-sm text-gray-500 mt-3 font-sans font-medium">
+    <figcaption class="text-center text-sm text-gray-500 mt-2 font-sans font-medium">
       {caption}
     </figcaption>
   )}
