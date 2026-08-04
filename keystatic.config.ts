@@ -2,8 +2,10 @@ import { config, fields, collection, singleton } from '@keystatic/core';
 
 export default config({
   storage: {
-    kind: 'github',
-    repo: 'tobeewitched/tobeewitched_site'
+    kind: 'cloud',
+  },
+  cloud: {
+    project: 'tobeewitched/tobeewitched',
   },
   collections: {
     essays: collection({
