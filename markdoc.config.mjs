@@ -8,6 +8,7 @@ export default defineMarkdocConfig({
         image: { type: String },
         caption: { type: String },
         size: { type: String },
+        align: { type: String },
       },
     },
     callout: {
@@ -15,6 +16,19 @@ export default defineMarkdocConfig({
       attributes: {
         type: { type: String },
         text: { type: String },
+      },
+    },
+    leadText: {
+      render: component('./src/components/markdoc/LeadText.astro'),
+      attributes: {
+        text: { type: String },
+      },
+    },
+    epigraph: {
+      render: component('./src/components/markdoc/Epigraph.astro'),
+      attributes: {
+        text: { type: String },
+        author: { type: String },
       },
     },
   },

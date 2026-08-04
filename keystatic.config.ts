@@ -1,19 +1,20 @@
 import { config, fields, collection, singleton, component } from '@keystatic/core';
 
-// Настройка кастомных блоков для редактора
-const markdocConfig = fields.markdoc({
+// Настройка продвинутого визуального редактора Document со ВСЕМИ ручками
+const documentEditorConfig = fields.document({
   label: 'Текст',
-  extension: 'mdoc',
-  options: {
-    image: {
-      directory: 'public/images/posts',
-      publicPath: '/images/posts/',
-    },
+  formatting: true,
+  dividers: true,
+  links: true,
+  tables: true,
+  image: {
+    directory: 'public/images/posts',
+    publicPath: '/images/posts/',
   },
   components: {
-    // БЛОК 1: Картинка с подписью и размером
+    // ИНСТРУМЕНТ 1: Картинка с подписью, размером и выравниванием
     imageWithCaption: component({
-      label: '📷 Картинка с подписью и размером',
+      label: '📷 Картинка (с подписью, размером и обтеканием)',
       preview: (props) => props.fields.caption.value || 'Картинка',
       schema: {
         image: fields.image({
@@ -23,7 +24,7 @@ const markdocConfig = fields.markdoc({
         }),
         caption: fields.text({ label: 'Подпись под фото' }),
         size: fields.select({
-          label: 'Размер картинки на странице',
+          label: 'Размер картинки',
           defaultValue: 'full',
           options: [
             { label: 'На всю ширину (100%)', value: 'full' },
@@ -31,9 +32,19 @@ const markdocConfig = fields.markdoc({
             { label: 'Компактная (50%)', value: 'small' },
           ],
         }),
+        align: fields.select({
+          label: 'Выравнивание / Обтекание',
+          defaultValue: 'center',
+          options: [
+            { label: 'По центру', value: 'center' },
+            { label: 'Слева (текст обтекает справа)', value: 'left' },
+            { label: 'Справа (текст обтекает слева)', value: 'right' },
+          ],
+        }),
       },
     }),
-    // БЛОК 2: Красивая Цитата / Плашка
+
+    // ИНСТРУМЕНТ 2: Выделенный блок / Цитата
     callout: component({
       label: '💬 Выделенный блок / Цитата',
       preview: (props) => props.fields.text.value || 'Цитата',
@@ -48,6 +59,25 @@ const markdocConfig = fields.markdoc({
           ],
         }),
         text: fields.text({ label: 'Текст цитаты или заметки', multiline: true }),
+      },
+    }),
+
+    // ИНСТРУМЕНТ 3: Крупный Вводный текст (Лид-абзац)
+    leadText: component({
+      label: '✒️ Крупный Лид-текст (Первый абзац)',
+      preview: (props) => props.fields.text.value || 'Лид-текст',
+      schema: {
+        text: fields.text({ label: 'Текст вводного абзаца', multiline: true }),
+      },
+    }),
+
+    // ИНСТРУМЕНТ 4: Академический Эпиграф
+    epigraph: component({
+      label: '📜 Академический Эпиграф',
+      preview: (props) => props.fields.text.value || 'Эпиграф',
+      schema: {
+        text: fields.text({ label: 'Текст эпиграфа', multiline: true }),
+        author: fields.text({ label: 'Автор (например: Жильбер Дюран)' }),
       },
     }),
   },
@@ -71,9 +101,9 @@ export default config({
         date: fields.date({ label: 'Дата публикации' }),
         tag: fields.text({ label: 'Категория', defaultValue: 'Заметка' }),
         ambientTrack: fields.text({ label: 'Название трека' }),
-        audioFile: fields.text({ label: 'Ссылка на файл (/audio/track.mp3)' }),
+        audioFile: fields.text({ label: 'Ссылка на файл' }),
         readingTime: fields.text({ label: 'Время чтения' }),
-        content: markdocConfig,
+        content: documentEditorConfig,
       },
     }),
     research: collection({
@@ -88,7 +118,7 @@ export default config({
         ambientTrack: fields.text({ label: 'Название трека' }),
         audioFile: fields.text({ label: 'Ссылка на файл' }),
         readingTime: fields.text({ label: 'Время чтения' }),
-        content: markdocConfig,
+        content: documentEditorConfig,
       },
     }),
     stories: collection({
@@ -103,7 +133,7 @@ export default config({
         ambientTrack: fields.text({ label: 'Название трека' }),
         audioFile: fields.text({ label: 'Ссылка на файл' }),
         readingTime: fields.text({ label: 'Время чтения' }),
-        content: markdocConfig,
+        content: documentEditorConfig,
       },
     }),
     about: collection({
@@ -114,7 +144,7 @@ export default config({
       schema: {
         title: fields.slug({ name: { label: 'Название раздела' } }),
         order: fields.number({ label: 'Порядок вывода', defaultValue: 1 }),
-        content: markdocConfig,
+        content: documentEditorConfig,
       },
     }),
     publications: collection({
@@ -148,7 +178,7 @@ export default config({
         heroTitle: fields.text({ label: 'Крупный заголовок', defaultValue: 'Исследуя структуры воображения.' }),
         heroText: fields.text({ label: 'Текст под заголовком (Абзац 1)', multiline: true }),
         heroText2: fields.text({ label: 'Текст под заголовком (Абзац 2)', multiline: true }),
-        heroImage: fields.text({ label: 'Ссылка на фото' }),
+        heroImage: fields.text({ label: 'Ссылка на ваше фото' }),
         telegramLink: fields.text({ label: 'Ссылка на Telegram', defaultValue: 'https://t.me/' }),
       },
     }),
