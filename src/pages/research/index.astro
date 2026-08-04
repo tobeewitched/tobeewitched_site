@@ -7,6 +7,9 @@ import { getEntry } from 'astro:content';
 const reader = createReader(process.cwd(), keystaticConfig);
 const papers = await reader.collections.research.all();
 
+// СОРТИРОВКА: От новых к старым
+papers.sort((a, b) => new Date(b.entry.date || 0).getTime() - new Date(a.entry.date || 0).getTime());
+
 const siteData = await getEntry('site', 'settings');
 const desc = siteData?.data?.researchDesc || 'Мои научные статьи, монографии и полевые заметки.';
 ---
@@ -40,7 +43,7 @@ const desc = siteData?.data?.researchDesc || 'Мои научные статьи
                   <span class="text-purple-600">{paper.entry.tag || 'Препринт'}</span>
                   <span class="text-gray-300">•</span>
                   <span class="text-gray-400 text-[10px]">{paper.entry.readingTime || '5 мин'}</span>
-             </div>
+                </div>
               </div>
             </div>
           </article>
