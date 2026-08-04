@@ -7,7 +7,9 @@ import { getEntry } from 'astro:content';
 const reader = createReader(process.cwd(), keystaticConfig);
 const essays = await reader.collections.essays.all();
 
-// Достаем текст описания из админки
+// СОРТИРОВКА: От новых к старым
+essays.sort((a, b) => new Date(b.entry.date || 0).getTime() - new Date(a.entry.date || 0).getTime());
+
 const siteData = await getEntry('site', 'settings');
 const desc = siteData?.data?.essaysDesc || 'Здесь собраны мои развернутые тексты и заметки.';
 ---
@@ -16,9 +18,7 @@ const desc = siteData?.data?.essaysDesc || 'Здесь собраны мои р�
   <main class="pb-16 min-h-[500px]">
     
     <div class="mb-12 border-b border-gray-100 pb-8">
-      <!-- УБРАЛИ ТОЧКУ -->
       <h2 class="text-3xl md:text-4xl font-bold font-serif text-black mb-4">Эссе и заметки</h2>
-      <!-- ВЫВОДИМ ТЕКСТ ИЗ АДМИНКИ -->
       <p class="text-gray-600 text-lg max-w-2xl">{desc}</p>
     </div>
 
