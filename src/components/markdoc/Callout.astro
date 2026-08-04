@@ -1,0 +1,13 @@
+---
+const { type = 'note', text } = Astro.props;
+
+const styles = {
+  note: 'bg-gray-50 border-l-4 border-gray-400 text-gray-700',
+  warning: 'bg-yellow-50 border-l-4 border-yellow-500 text-yellow-900 font-medium',
+  quote: 'bg-gray-900 text-white border-l-4 border-blue-500 italic font-serif text-xl shadow-md',
+};
+---
+
+<div class={`p-6 my-8 rounded-r-md ${styles[type] || styles.note}`}>
+  <p class="m-0 leading-relaxed whitespace-pre-wrap">{text}</p>
+</div>

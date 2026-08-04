@@ -1,9 +1,64 @@
-import { config, fields, collection, singleton } from '@keystatic/core';
+import { config, fields, collection, singleton, component } from '@keystatic/core';
+
+// Настройка кастомных блоков для редактора
+const markdocConfig = fields.markdoc({
+  label: 'Текст',
+  extension: 'mdoc',
+  options: {
+    image: {
+      directory: 'public/images/posts',
+      publicPath: '/images/posts/',
+    },
+  },
+  components: {
+    // БЛОК 1: Картинка с подписью и размером
+    imageWithCaption: component({
+      label: '📷 Картинка с подписью и размером',
+      preview: (props) => props.fields.caption.value || 'Картинка',
+      schema: {
+        image: fields.image({
+          label: 'Загрузить изображение',
+          directory: 'public/images/posts',
+          publicPath: '/images/posts/',
+        }),
+        caption: fields.text({ label: 'Подпись под фото' }),
+        size: fields.select({
+          label: 'Размер картинки на странице',
+          defaultValue: 'full',
+          options: [
+            { label: 'На всю ширину (100%)', value: 'full' },
+            { label: 'Средняя (75%)', value: 'medium' },
+            { label: 'Компактная (50%)', value: 'small' },
+          ],
+        }),
+      },
+    }),
+    // БЛОК 2: Красивая Цитата / Плашка
+    callout: component({
+      label: '💬 Выделенный блок / Цитата',
+      preview: (props) => props.fields.text.value || 'Цитата',
+      schema: {
+        type: fields.select({
+          label: 'Стиль блока',
+          defaultValue: 'note',
+          options: [
+            { label: 'Заметка (Серая)', value: 'note' },
+            { label: 'Важно (Желтая)', value: 'warning' },
+            { label: 'Премиум Цитата (Черная)', value: 'quote' },
+          ],
+        }),
+        text: fields.text({ label: 'Текст цитаты или заметки', multiline: true }),
+      },
+    }),
+  },
+});
 
 export default config({
   storage: {
-    kind: 'github',
-    repo: 'tobeewitched/tobeewitched_site'
+    kind: 'cloud',
+  },
+  cloud: {
+    project: 'tobeewitched/tobeewitched',
   },
   collections: {
     essays: collection({
@@ -15,19 +70,10 @@ export default config({
         title: fields.slug({ name: { label: 'Заголовок' } }),
         date: fields.date({ label: 'Дата публикации' }),
         tag: fields.text({ label: 'Категория', defaultValue: 'Заметка' }),
-        ambientTrack: fields.text({ label: 'Название трека (оставь пустым, если не нужно)' }),
-        audioFile: fields.text({ label: 'Ссылка на файл (например: /audio/track.mp3)' }),
-        readingTime: fields.text({ label: 'Время чтения (например: 12 мин)' }),
-        content: fields.markdoc({ 
-          label: 'Текст статьи',
-          extension: 'mdoc',
-          options: {
-            image: {
-              directory: 'public/images/posts',
-              publicPath: '/images/posts/'
-            }
-          }
-        }),
+        ambientTrack: fields.text({ label: 'Название трека' }),
+        audioFile: fields.text({ label: 'Ссылка на файл (/audio/track.mp3)' }),
+        readingTime: fields.text({ label: 'Время чтения' }),
+        content: markdocConfig,
       },
     }),
     research: collection({
@@ -42,16 +88,7 @@ export default config({
         ambientTrack: fields.text({ label: 'Название трека' }),
         audioFile: fields.text({ label: 'Ссылка на файл' }),
         readingTime: fields.text({ label: 'Время чтения' }),
-        content: fields.markdoc({ 
-          label: 'Текст',
-          extension: 'mdoc',
-          options: {
-            image: {
-              directory: 'public/images/posts',
-              publicPath: '/images/posts/'
-            }
-          }
-        }),
+        content: markdocConfig,
       },
     }),
     stories: collection({
@@ -66,16 +103,7 @@ export default config({
         ambientTrack: fields.text({ label: 'Название трека' }),
         audioFile: fields.text({ label: 'Ссылка на файл' }),
         readingTime: fields.text({ label: 'Время чтения' }),
-        content: fields.markdoc({ 
-          label: 'Текст',
-          extension: 'mdoc',
-          options: {
-            image: {
-              directory: 'public/images/posts',
-              publicPath: '/images/posts/'
-            }
-          }
-        }),
+        content: markdocConfig,
       },
     }),
     about: collection({
@@ -84,18 +112,9 @@ export default config({
       path: 'src/content/about/*',
       format: { contentField: 'content' },
       schema: {
-        title: fields.slug({ name: { label: 'Название раздела (Например: Биография)' } }),
-        order: fields.number({ label: 'Порядок вывода (1 - самый первый, 2 - ниже и т.д.)', defaultValue: 1 }),
-        content: fields.markdoc({ 
-          label: 'Текст',
-          extension: 'mdoc',
-          options: {
-            image: {
-              directory: 'public/images/posts',
-              publicPath: '/images/posts/'
-            }
-          }
-        }),
+        title: fields.slug({ name: { label: 'Название раздела' } }),
+        order: fields.number({ label: 'Порядок вывода', defaultValue: 1 }),
+        content: markdocConfig,
       },
     }),
     publications: collection({
@@ -106,16 +125,16 @@ export default config({
       schema: {
         title: fields.slug({ name: { label: 'Название статьи' } }),
         year: fields.text({ label: 'Год издания', defaultValue: '2024' }),
-        journal: fields.text({ label: 'Название журнала / издательства' }),
+        journal: fields.text({ label: 'Журнал / Издательство' }),
         status: fields.select({
-          label: 'Статус публикации',
+          label: 'Статус',
           defaultValue: 'published',
           options: [
             { label: 'Опубликовано', value: 'published' },
-            { label: 'В печати / На рецензии', value: 'upcoming' }
+            { label: 'В печати', value: 'upcoming' }
           ]
         }),
-        linkText: fields.text({ label: 'Текст ссылки (например: Скачать PDF)', defaultValue: 'Читать онлайн' }),
+        linkText: fields.text({ label: 'Текст ссылки', defaultValue: 'Читать онлайн' }),
         linkUrl: fields.text({ label: 'URL ссылки' }),
       },
     }),
@@ -129,7 +148,7 @@ export default config({
         heroTitle: fields.text({ label: 'Крупный заголовок', defaultValue: 'Исследуя структуры воображения.' }),
         heroText: fields.text({ label: 'Текст под заголовком (Абзац 1)', multiline: true }),
         heroText2: fields.text({ label: 'Текст под заголовком (Абзац 2)', multiline: true }),
-        heroImage: fields.text({ label: 'Ссылка на ваше фото', defaultValue: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80' }),
+        heroImage: fields.text({ label: 'Ссылка на фото' }),
         telegramLink: fields.text({ label: 'Ссылка на Telegram', defaultValue: 'https://t.me/' }),
       },
     }),
@@ -139,13 +158,13 @@ export default config({
       format: { data: 'json' },
       schema: {
         siteTitle: fields.text({ label: 'Главный логотип', defaultValue: 'tobeewitched.' }),
-        siteSubtitle: fields.text({ label: 'Подзаголовок сайта', defaultValue: 'Академический журнал & Исследовательская база' }),
-        footerText: fields.text({ label: 'Текст в подвале (копирайт)', defaultValue: '© 2024 tobeewitched.' }),
-        aboutDesc: fields.text({ label: 'Текст для раздела "Обо мне"', multiline: true, defaultValue: 'Мой академический путь, биография и сфера научных интересов.' }),
-        researchDesc: fields.text({ label: 'Текст для "Исследований"', multiline: true, defaultValue: 'Мои научные статьи, монографии и полевые заметки.' }),
-        essaysDesc: fields.text({ label: 'Текст для "Эссе"', multiline: true, defaultValue: 'Здесь собраны мои развернутые тексты и заметки.' }),
-        storiesDesc: fields.text({ label: 'Текст для "Рассказов"', multiline: true, defaultValue: 'Художественные тексты, литературные эксперименты и проза.' }),
-        pubsDesc: fields.text({ label: 'Текст для "Публикаций"', multiline: true, defaultValue: 'Полный список научных статей, распределенный по статусу.' }),
+        siteSubtitle: fields.text({ label: 'Подзаголовок сайта' }),
+        footerText: fields.text({ label: 'Текст в подвале' }),
+        aboutDesc: fields.text({ label: 'Текст "Обо мне"', multiline: true }),
+        researchDesc: fields.text({ label: 'Текст "Исследований"', multiline: true }),
+        essaysDesc: fields.text({ label: 'Текст "Эссе"', multiline: true }),
+        storiesDesc: fields.text({ label: 'Текст "Рассказов"', multiline: true }),
+        pubsDesc: fields.text({ label: 'Текст "Публикаций"', multiline: true }),
       },
     }),
     test: singleton({
@@ -153,19 +172,19 @@ export default config({
       path: 'src/content/test/data',
       format: { data: 'json' },
       schema: {
-        introTitle: fields.text({ label: 'Заголовок интро', defaultValue: 'Архитектура Воображаемого' }),
+        introTitle: fields.text({ label: 'Заголовок интро' }),
         introText: fields.text({ label: 'Текст интро', multiline: true }),
         results: fields.array(
           fields.object({
-            code: fields.text({ label: 'Код (НЕ МЕНЯТЬ! Например: Day_Summer_Clear)' }),
-            title: fields.text({ label: 'Название профиля' }),
-            image: fields.text({ label: 'Ссылка на картинку (или /images/файл.jpg)' }),
+            code: fields.text({ label: 'Код' }),
+            title: fields.text({ label: 'Название' }),
+            image: fields.text({ label: 'Картинка' }),
             quote: fields.text({ label: 'Цитата' }),
             desc: fields.text({ label: 'Описание', multiline: true }),
             pros: fields.text({ label: 'Сильные стороны', multiline: true }),
             cons: fields.text({ label: 'Слабые стороны', multiline: true })
           }),
-          { itemLabel: props => props.value.title || 'Новый результат' }
+          { itemLabel: props => props.value.title || 'Результат' }
         )
       }
     }),

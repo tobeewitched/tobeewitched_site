@@ -1,0 +1,21 @@
+import { defineMarkdocConfig, component } from '@astrojs/markdoc/config';
+
+export default defineMarkdocConfig({
+  tags: {
+    imageWithCaption: {
+      render: component('./src/components/markdoc/ImageWithCaption.astro'),
+      attributes: {
+        image: { type: String },
+        caption: { type: String },
+        size: { type: String },
+      },
+    },
+    callout: {
+      render: component('./src/components/markdoc/Callout.astro'),
+      attributes: {
+        type: { type: String },
+        text: { type: String },
+      },
+    },
+  },
+});

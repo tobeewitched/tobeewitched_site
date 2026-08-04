@@ -1,0 +1,18 @@
+---
+const { image, caption, size = 'full' } = Astro.props;
+
+const sizeClasses = {
+  full: 'w-full',
+  medium: 'w-full md:w-3/4 mx-auto',
+  small: 'w-full md:w-1/2 mx-auto',
+};
+---
+
+<figure class={`my-10 ${sizeClasses[size] || 'w-full'}`}>
+  <img src={image} alt={caption || ''} class="w-full h-auto rounded-sm shadow-sm" />
+  {caption && (
+    <figcaption class="text-center text-sm text-gray-500 mt-3 font-sans font-medium">
+      {caption}
+    </figcaption>
+  )}
+</figure>
