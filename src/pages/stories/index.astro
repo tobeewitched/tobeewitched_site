@@ -7,9 +7,15 @@ import { getEntry } from 'astro:content';
 const reader = createReader(process.cwd(), keystaticConfig);
 const stories = await reader.collections.stories.all();
 
-// Достаем текст из глобальных настроек
+// СОРТИРОВКА: От новых к старым (исправленная логика парсинга даты)
+stories.sort((a, b) => {
+  const dateA = a.entry.date ? new Date(a.entry.date).getTime() : 0;
+  const dateB = b.entry.date ? new Date(b.entry.date).getTime() : 0;
+  return dateB - dateA;
+});
+
 const siteData = await getEntry('site', 'settings');
-const desc = siteData?.data?.storiesDesc || 'Художественные тексты и литературные эксперименты.';
+const desc = siteData?.data?.storiesDesc || 'Художественные тексты, литературные эксперименты и проза.';
 ---
 
 <Layout>
@@ -17,7 +23,6 @@ const desc = siteData?.data?.storiesDesc || 'Художественные тек
     
     <div class="mb-12 border-b border-gray-100 pb-8">
       <h2 class="text-3xl md:text-4xl font-bold font-serif text-black mb-4">Рассказы</h2>
-      <!-- ВЫВОДИМ ТЕКСТ ИЗ АДМИНКИ -->
       <p class="text-gray-600 text-lg max-w-2xl">{desc}</p>
     </div>
 
