@@ -1,1 +1,90 @@
 @import "tailwindcss";
+
+/* ======================================================
+   ЖУРНАЛЬНАЯ ТИПОГРАФИКА ДЛЯ СТАТЕЙ (Стиль Teletype / Medium)
+   ====================================================== */
+
+article {
+  font-family: Georgia, Cambria, "Times New Roman", Times, serif;
+  font-size: 1.125rem; /* 18px — идеальный размер для чтения */
+  line-height: 1.8;
+  color: #242424;
+}
+
+/* Заголовки внутри статей */
+article h1, article h2, article h3, article h4 {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-weight: 700;
+  color: #000000;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+article h2 { font-size: 1.875rem; border-bottom: 1px solid #f0f0f0; padding-bottom: 0.5rem; } /* 30px */
+article h3 { font-size: 1.5rem; }   /* 24px */
+
+/* Абзацы */
+article p {
+  margin-bottom: 1.5rem;
+}
+
+/* Цитаты (Blockquotes) */
+article blockquote {
+  border-left: 3px solid #000000;
+  padding-left: 1.25rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  font-style: italic;
+  color: #4a4a4a;
+  font-size: 1.2rem;
+}
+
+/* Картинки (ЦЕНТРИРОВАНИЕ И РАЗМЕРЫ) */
+article img {
+  max-width: 100%;      /* Не дает картинке вылезти за края экрана */
+  height: auto;         /* Сохраняет пропорции */
+  display: block;       /* Делает картинку самостоятельным блоком */
+  margin: 2.5rem auto 0.5rem auto; /* auto слева и справа СТАВИТ ЕЁ СТРОГО ПО ЦЕНТРУ */
+  border-radius: 4px;
+}
+
+/* Подписи к фото (любой курсив прямо под картинкой автоматически становится подписью) */
+article img + em, article figcaption {
+  display: block;
+  text-align: center;
+  font-size: 0.875rem; /* 14px */
+  color: #757575;
+  margin-bottom: 2.5rem;
+  font-style: normal;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Выделения текста */
+article strong {
+  color: #000000;
+  font-weight: 700;
+}
+
+/* Списки */
+article ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+article ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+article li {
+  margin-bottom: 0.5rem;
+}
+
+/* Выделение маркером */
+article mark {
+  background-color: #fef08a;
+  padding: 0.1rem 0.3rem;
+}
