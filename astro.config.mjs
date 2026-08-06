@@ -4,13 +4,17 @@ import react from '@astrojs/react';
 import markdoc from '@astrojs/markdoc';
 import keystatic from '@keystatic/astro';
 
-import vercel from '@astrojs/vercel';
+// Подключаем официальный генератор карты сайта
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
+  // УКАЗЫВАЕМ ТВОЙ ДОМЕН (ОБЯЗАТЕЛЬНО ДЛЯ КАРТЫ САЙТА)
+  site: 'https://tobeewitched.ru',
+  
   vite: {
     plugins: [tailwindcss()]
   },
-
-  integrations: [react(), markdoc(), keystatic()],
-  adapter: vercel()
+  
+  // Добавили sitemap() в список интеграций
+  integrations: [react(), markdoc(), keystatic(), sitemap()]
 });
